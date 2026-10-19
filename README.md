@@ -111,6 +111,9 @@ cd PAIRING-WHATSAPP
 
 **4. Jalankan**
 
+```bash 
+npm install
+```
 ```bash
 npm start
 ```

@@ -25,7 +25,7 @@ WhatsApp Pairing CLI interaktif by **KyuuXzry**. Request pairing code via termin
 
 ```bash
 git clone https://github.com/USERNAME/wa-pairing.git
-cd wa-pairing
+cd PAIRING-WHATSAPP
 npm start
 ```
 

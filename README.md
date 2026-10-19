@@ -4,7 +4,7 @@
 
 <img src="assets/whatsapp.svg" width="120" height="120" alt="WhatsApp"/>
 
-# KYUU PAIR
+# SPAM PAIR
 
 **WhatsApp Pairing CLI interaktif**
 

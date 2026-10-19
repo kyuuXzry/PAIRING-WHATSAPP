@@ -89,21 +89,41 @@ Ada juga animasi terminal (spinner, progress bar, box border, typewriter) dan au
 
 **Langkah**
 
+**1. Siapkan Termux** (lewati kalau pakai Linux / macOS / Windows yang sudah ada Git dan Node.js)
+
+```bash
+pkg update -y && pkg upgrade -y && pkg install git nodejs-lts -y && termux-setup-storage
+```
+
+Perintah ini meng-update paket, meng-install Git dan Node.js LTS, lalu meminta izin akses penyimpanan. Izinkan saat muncul popup.
+
+**2. Clone repository**
+
 ```bash
 git clone https://github.com/kyuuXzry/PAIRING-WHATSAPP.git
+```
+
+**3. Masuk ke folder project**
+
+```bash
 cd PAIRING-WHATSAPP
+```
+
+**4. Jalankan**
+
+```bash
 npm start
 ```
 
 `npm start` otomatis menjalankan `prestart.js`, yang meng-install dependency kalau belum ada.
 
 <details>
-<summary><b>Install Node.js di Termux</b></summary>
+<summary><b>Node.js error di Termux</b></summary>
 <br/>
 
+Cek dulu versinya:
+
 ```bash
-pkg update -y && pkg upgrade -y
-pkg install nodejs-lts -y
 node -v
 ```
 

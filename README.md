@@ -2,75 +2,73 @@
 
 <br/>
 
-<img src="https://cdn.simpleicons.org/whatsapp/25D366" width="96" height="96" alt="WhatsApp"/>
+<img src="assets/whatsapp.svg" width="120" height="120" alt="WhatsApp"/>
 
 # KYUU PAIR
 
 **WhatsApp Pairing CLI interaktif**
 
-Request pairing code lewat terminal, dengan pairing beruntun ke nomor yang sama. Counter, delay, dan timeout bisa diatur sendiri.
-
-<a href="https://github.com/kyuuXzry/KYUU-PAIR">
-  <img src="https://readme-typing-svg.demolab.com?font=JetBrains+Mono&weight=500&size=17&duration=2800&pause=900&color=25D366&center=true&vCenter=true&width=560&height=40&lines=%24+npm+start;Pairing+via+code%2C+tanpa+scan+QR;Pairing+beruntun+sampai+1000x;Config+persisten%2C+menu+interaktif" alt="Typing SVG"/>
-</a>
+Request pairing code lewat terminal, dengan pairing beruntun ke nomor yang sama.<br/>
+Counter, delay, dan timeout bisa diatur sendiri.
 
 <br/>
 
-<a href="https://github.com/kyuuXzry/KYUU-PAIR/stargazers"><img src="https://img.shields.io/github/stars/kyuuXzry/KYUU-PAIR?style=flat-square&logo=github&logoColor=white&labelColor=075E54&color=25D366" alt="Stars"/></a>
-<a href="https://github.com/kyuuXzry/KYUU-PAIR/network/members"><img src="https://img.shields.io/github/forks/kyuuXzry/KYUU-PAIR?style=flat-square&logo=github&logoColor=white&labelColor=075E54&color=25D366" alt="Forks"/></a>
-<img src="https://img.shields.io/badge/Node.js-18%2B-25D366?style=flat-square&logo=nodedotjs&logoColor=white&labelColor=075E54" alt="Node.js"/>
-<img src="https://img.shields.io/badge/Pairing-Code%20%7C%20No%20QR-25D366?style=flat-square&logo=whatsapp&logoColor=white&labelColor=075E54" alt="Pairing Code"/>
-<img src="https://img.shields.io/badge/Termux-Ready-25D366?style=flat-square&logo=android&logoColor=white&labelColor=075E54" alt="Termux"/>
-<img src="https://img.shields.io/badge/License-ISC-25D366?style=flat-square&logo=opensourceinitiative&logoColor=white&labelColor=075E54" alt="License"/>
+<a href="https://github.com/kyuuXzry/PAIRING-WHATSAPP/stargazers"><img src="https://img.shields.io/github/stars/kyuuXzry/PAIRING-WHATSAPP?style=flat-square&logo=github&logoColor=16A34A&labelColor=F0FDF4&color=25D366" alt="Stars"/></a>
+<a href="https://github.com/kyuuXzry/PAIRING-WHATSAPP/network/members"><img src="https://img.shields.io/github/forks/kyuuXzry/PAIRING-WHATSAPP?style=flat-square&logo=github&logoColor=16A34A&labelColor=F0FDF4&color=25D366" alt="Forks"/></a>
+<img src="https://img.shields.io/badge/Node.js-18%2B-25D366?style=flat-square&logo=nodedotjs&logoColor=16A34A&labelColor=F0FDF4" alt="Node.js"/>
+<img src="https://img.shields.io/badge/Pairing-Code%20%7C%20No%20QR-25D366?style=flat-square&logo=whatsapp&logoColor=16A34A&labelColor=F0FDF4" alt="Pairing Code"/>
+<img src="https://img.shields.io/badge/Termux-Ready-25D366?style=flat-square&logo=android&logoColor=16A34A&labelColor=F0FDF4" alt="Termux"/>
+<img src="https://img.shields.io/badge/License-ISC-25D366?style=flat-square&logo=opensourceinitiative&logoColor=16A34A&labelColor=F0FDF4" alt="License"/>
 
 <br/><br/>
 
-<img src="https://capsule-render.vercel.app/api?type=rect&color=0:075E54,50:25D366,100:075E54&height=3" width="100%"/>
+<a href="#fitur">Fitur</a> ·
+<a href="#instalasi">Instalasi</a> ·
+<a href="#cara-pakai">Cara Pakai</a> ·
+<a href="#konfigurasi">Konfigurasi</a> ·
+<a href="#peringatan">Peringatan</a>
+
+<br/><br/>
+
+<img src="https://capsule-render.vercel.app/api?type=rect&color=0:DCFCE7,50:25D366,100:DCFCE7&height=3" width="100%"/>
 
 </div>
 
 <br/>
-
-```text
-╭──────────────────────────────────────────╮
-│  KYUU PAIR  ·  WhatsApp Pairing CLI      │
-│  Pairing code · Beruntun · Tanpa QR      │
-╰──────────────────────────────────────────╯
-```
 
 ## Fitur
 
 <table width="100%">
 <tr>
 <td width="33%" valign="top" align="center">
-<img src="https://api.iconify.design/lucide:key-round.svg?color=%2325D366" width="30"/><br/>
+<img src="https://cdn.simpleicons.org/whatsapp/25D366" width="34" height="34" alt="Pairing via Code"/><br/>
 <b>Pairing via Code</b><br/>
 <sub>Tanpa scan QR</sub>
 </td>
 <td width="33%" valign="top" align="center">
-<img src="https://api.iconify.design/lucide:repeat.svg?color=%2325D366" width="30"/><br/>
+<img src="https://cdn.simpleicons.org/githubactions/16A34A" width="34" height="34" alt="Pairing Beruntun"/><br/>
 <b>Pairing Beruntun</b><br/>
 <sub>Default 10x, bisa sampai 1000x</sub>
 </td>
 <td width="33%" valign="top" align="center">
-<img src="https://api.iconify.design/lucide:timer.svg?color=%2325D366" width="30"/><br/>
+<img src="https://cdn.simpleicons.org/clockify/16A34A" width="34" height="34" alt="Delay dan Timeout"/><br/>
 <b>Delay & Timeout</b><br/>
 <sub>Bisa diatur mulai 5 detik</sub>
 </td>
 </tr>
 <tr>
 <td width="33%" valign="top" align="center">
-<img src="https://api.iconify.design/lucide:bar-chart-horizontal.svg?color=%2325D366" width="30"/><br/>
+<img src="https://cdn.simpleicons.org/chartdotjs/16A34A" width="34" height="34" alt="Counter Visual"/><br/>
 <b>Counter Visual</b><br/>
 <sub>Progress bar tiap pairing</sub>
 </td>
 <td width="33%" valign="top" align="center">
-<img src="https://api.iconify.design/lucide:save.svg?color=%2325D366" width="30"/><br/>
+<img src="https://cdn.simpleicons.org/json/16A34A" width="34" height="34" alt="Config Persisten"/><br/>
 <b>Config Persisten</b><br/>
 <sub>Tersimpan di <code>config.json</code></sub>
 </td>
 <td width="33%" valign="top" align="center">
-<img src="https://api.iconify.design/lucide:terminal-square.svg?color=%2325D366" width="30"/><br/>
+<img src="https://cdn.simpleicons.org/gnubash/16A34A" width="34" height="34" alt="Menu Interaktif"/><br/>
 <b>Menu Interaktif</b><br/>
 <sub>Ulangi pairing tanpa restart</sub>
 </td>
@@ -92,8 +90,8 @@ Ada juga animasi terminal (spinner, progress bar, box border, typewriter) dan au
 **Langkah**
 
 ```bash
-git clone https://github.com/kyuuXzry/KYUU-PAIR.git
-cd KYUU-PAIR
+git clone https://github.com/kyuuXzry/PAIRING-WHATSAPP.git
+cd PAIRING-WHATSAPP
 npm start
 ```
 
@@ -134,27 +132,15 @@ Setelah `npm start`, muncul menu:
 
 **Alur pairing beruntun**
 
-1. Pilih menu `[1]`.
-2. Masukkan nomor HP target (format internasional tanpa `+`, contoh `6281234567890`).
-3. Konfirmasi jumlah dan delay.
-4. Script request kode pairing, lalu menampilkannya.
-5. Masukkan kode di WhatsApp HP: **Perangkat Tertaut → Tautkan Perangkat → Tautkan dengan nomor telepon**.
-6. Tunggu konfirmasi atau timeout.
-7. Setelah delay, pairing berikutnya jalan otomatis.
-
-```mermaid
-sequenceDiagram
-    actor U as Kamu
-    participant C as KYUU PAIR
-    participant W as Server WhatsApp
-    U->>C: Masukkan nomor
-    C->>W: Request pairing code
-    W-->>C: Kode 8 digit
-    C-->>U: Tampilkan kode
-    U->>W: Input kode di WhatsApp HP
-    W-->>C: Konfirmasi / timeout
-    C->>C: Delay, lanjut pairing berikutnya
-```
+| Langkah | Keterangan |
+| :-: | :-- |
+| 1 | Pilih menu `[1]` |
+| 2 | Masukkan nomor HP target (format internasional tanpa `+`, contoh `6281234567890`) |
+| 3 | Konfirmasi jumlah dan delay |
+| 4 | Script request kode pairing, lalu menampilkannya |
+| 5 | Masukkan kode di WhatsApp HP: **Perangkat Tertaut → Tautkan Perangkat → Tautkan dengan nomor telepon** |
+| 6 | Tunggu konfirmasi atau timeout |
+| 7 | Setelah delay, pairing berikutnya jalan otomatis |
 
 **Format nomor**
 
@@ -190,7 +176,9 @@ Ubah lewat menu `[3] Pengaturan` atau edit `config.json` langsung.
 ## Struktur Project
 
 ```text
-KYUU-PAIR
+PAIRING-WHATSAPP
+├── assets/
+│   └── whatsapp.svg
 ├── package.json
 ├── prestart.js      # Auto-install dependency
 ├── pairing.js       # Main script
@@ -215,21 +203,24 @@ KYUU-PAIR
 
 <div align="center">
 
-<img src="https://cdn.simpleicons.org/nodedotjs/5FA04E" width="44" height="44" alt="Node.js" title="Node.js"/>&nbsp;&nbsp;&nbsp;<img src="https://cdn.simpleicons.org/npm/CB3837" width="44" height="44" alt="npm" title="npm"/>&nbsp;&nbsp;&nbsp;<img src="https://cdn.simpleicons.org/whatsapp/25D366" width="44" height="44" alt="WhatsApp" title="WhatsApp"/>&nbsp;&nbsp;&nbsp;<img src="https://api.iconify.design/lucide:terminal-square.svg?color=%2325D366" width="44" height="44" alt="Termux" title="Termux"/>
+<img src="https://cdn.simpleicons.org/nodedotjs/5FA04E" width="44" height="44" alt="Node.js" title="Node.js"/>&nbsp;&nbsp;&nbsp;<img src="https://cdn.simpleicons.org/npm/CB3837" width="44" height="44" alt="npm" title="npm"/>&nbsp;&nbsp;&nbsp;<img src="https://cdn.simpleicons.org/whatsapp/25D366" width="44" height="44" alt="WhatsApp" title="WhatsApp"/>&nbsp;&nbsp;&nbsp;<img src="https://cdn.simpleicons.org/gnubash/4EAA25" width="44" height="44" alt="Terminal" title="Terminal"/>
 
-<sub>Node.js · npm · WhatsApp · Termux</sub>
+<sub>Node.js · npm · WhatsApp · Terminal</sub>
+
+<br/><br/>
+
+<img src="https://capsule-render.vercel.app/api?type=rect&color=0:DCFCE7,50:25D366,100:DCFCE7&height=3" width="100%"/>
 
 <br/>
 
-<img src="https://capsule-render.vercel.app/api?type=rect&color=0:075E54,50:25D366,100:075E54&height=3" width="100%"/>
+**Hubungi Saya** · KyuuXzry
 
-<br/>
-
-**Author** · KyuuXzry
-
-<a href="https://github.com/kyuuXzry"><img src="https://img.shields.io/badge/GitHub-kyuuXzry-25D366?style=flat-square&logo=github&logoColor=white&labelColor=075E54" alt="GitHub"/></a>
-<a href="https://wa.me/628567126744"><img src="https://img.shields.io/badge/WhatsApp-Hubungi-25D366?style=flat-square&logo=whatsapp&logoColor=white&labelColor=075E54" alt="WhatsApp"/></a>
-<a href="https://instagram.com/rissxzry_"><img src="https://img.shields.io/badge/Instagram-Follow-25D366?style=flat-square&logo=instagram&logoColor=white&labelColor=075E54" alt="Instagram"/></a>
+<a href="https://kyuudev.my.id"><img src="https://img.shields.io/badge/Website-kyuudev.my.id-25D366?style=flat-square&logo=googlechrome&logoColor=16A34A&labelColor=F0FDF4" alt="Website"/></a>
+<a href="https://wa.me/628567126744"><img src="https://img.shields.io/badge/WhatsApp-Hubungi-25D366?style=flat-square&logo=whatsapp&logoColor=16A34A&labelColor=F0FDF4" alt="WhatsApp"/></a>
+<a href="https://instagram.com/rissxzry_"><img src="https://img.shields.io/badge/Instagram-Follow-25D366?style=flat-square&logo=instagram&logoColor=16A34A&labelColor=F0FDF4" alt="Instagram"/></a>
+<a href="https://www.linkedin.com/in/rizki-handayani-22068538b"><img src="https://img.shields.io/badge/LinkedIn-Connect-25D366?style=flat-square&logo=linkedin&logoColor=16A34A&labelColor=F0FDF4" alt="LinkedIn"/></a>
+<a href="mailto:rzkhandayni.id@gmail.com"><img src="https://img.shields.io/badge/Email-Kirim%20Email-25D366?style=flat-square&logo=gmail&logoColor=16A34A&labelColor=F0FDF4" alt="Email"/></a>
+<a href="https://github.com/kyuuXzry"><img src="https://img.shields.io/badge/GitHub-kyuuXzry-25D366?style=flat-square&logo=github&logoColor=16A34A&labelColor=F0FDF4" alt="GitHub"/></a>
 
 <br/>
 

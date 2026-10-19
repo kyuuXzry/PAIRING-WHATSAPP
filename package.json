@@ -1,0 +1,25 @@
+{
+  "name": "wa-pairing",
+  "version": "1.0.0",
+  "description": "WhatsApp Pairing CLI by KyuuXzry",
+  "main": "pairing.js",
+  "scripts": {
+    "prestart": "node prestart.js",
+    "start": "node pairing.js"
+  },
+  "keywords": [
+    "whatsapp",
+    "pairing",
+    "baileys",
+    "cli"
+  ],
+  "author": "KyuuXzry",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "@whiskeysockets/baileys": "^6.7.0",
+    "@hapi/boom": "^10.0.1",
+    "pino": "^9.0.0",
+    "qrcode-terminal": "^0.12.0"
+  }
+}

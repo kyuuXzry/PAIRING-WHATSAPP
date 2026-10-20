@@ -21,22 +21,17 @@ const DEFAULT_CONFIG = {
 };
 
 const C = {
-  reset: '\x1b[0m', bold: '\x1b[1m', dim: '\x1b[2m', italic: '\x1b[3m',
-  underline: '\x1b[4m', blink: '\x1b[5m',
-  black: '\x1b[30m', red: '\x1b[31m', green: '\x1b[32m', yellow: '\x1b[33m',
-  blue: '\x1b[34m', magenta: '\x1b[35m', cyan: '\x1b[36m', white: '\x1b[37m',
-  gray: '\x1b[90m', brightRed: '\x1b[91m', brightGreen: '\x1b[92m',
-  brightYellow: '\x1b[93m', brightBlue: '\x1b[94m', brightMagenta: '\x1b[95m',
-  brightCyan: '\x1b[96m', brightWhite: '\x1b[97m',
-  bgMagenta: '\x1b[45m', bgCyan: '\x1b[46m', bgBlack: '\x1b[40m',
+  reset: '\x1b[0m', bold: '\x1b[1m', dim: '\x1b[2m',
+  gray: '\x1b[90m',
+  brightRed: '\x1b[91m', brightGreen: '\x1b[92m',
+  brightYellow: '\x1b[93m', brightBlue: '\x1b[94m',
+  brightMagenta: '\x1b[95m', brightCyan: '\x1b[96m', brightWhite: '\x1b[97m',
 };
 
 const color = (c, t) => `${C[c]}${t}${C.reset}`;
 const stripAnsi = (s) => s.replace(/\x1b\[[0-9;]*m/g, '');
 
 const SPINNER_FRAMES = ['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏'];
-
-const MIN_WIDTH = 46;
 
 function loadConfig() {
   if (fs.existsSync(CONFIG_FILE)) {
@@ -54,97 +49,25 @@ function saveConfig(cfg) {
   fs.writeFileSync(CONFIG_FILE, JSON.stringify(cfg, null, 2), 'utf-8');
 }
 
-function createSpinner(text, colorName = 'brightCyan') {
-  let i = 0, timer = null;
+function createInlineSpinner(getText) {
+  let i = 0, timer = null, stopped = false;
   return {
     start() {
       process.stdout.write('\x1b[?25l');
       timer = setInterval(() => {
-        const frame = SPINNER_FRAMES[i++ % SPINNER_FRAMES.length];
-        process.stdout.write(`\r  ${color(colorName, frame)} ${color('gray', text)}`);
+        if (stopped) return;
+        const f = SPINNER_FRAMES[i++ % SPINNER_FRAMES.length];
+        process.stdout.write(`\r\x1b[K  ${color('brightCyan', f)} ${color('gray', getText())}`);
       }, 80);
     },
+    update() {},
     stop(finalText = null) {
+      stopped = true;
       if (timer) clearInterval(timer);
       process.stdout.write('\r\x1b[K\x1b[?25h');
       if (finalText) console.log(finalText);
     },
   };
-}
-
-function progressBar(percent, width = 26) {
-  const filled = Math.round((percent / 100) * width);
-  const empty = width - filled;
-  const bar =
-    color('brightGreen', '█'.repeat(filled)) +
-    color('gray', '░'.repeat(empty));
-  return `${bar} ${color('brightCyan', Math.round(percent) + '%')}`;
-}
-
-function animateProgress(label, duration = 900) {
-  return new Promise((resolve) => {
-    let progress = 0;
-    const steps = 30;
-    const interval = duration / steps;
-    process.stdout.write('\x1b[?25l');
-    const timer = setInterval(() => {
-      progress += 100 / steps;
-      if (progress >= 100) {
-        progress = 100;
-        process.stdout.write(`\r\x1b[K  ${color('brightCyan', '⠿')} ${color('gray', label)}  ${progressBar(progress)}\x1b[?25h\n`);
-        clearInterval(timer);
-        resolve();
-      } else {
-        process.stdout.write(`\r\x1b[K  ${color('brightCyan', '⠿')} ${color('gray', label)}  ${progressBar(progress)}`);
-      }
-    }, interval);
-  });
-}
-
-function padCenter(text, width) {
-  const len = stripAnsi(text).length;
-  const totalPad = Math.max(0, width - len);
-  const left = Math.floor(totalPad / 2);
-  const right = totalPad - left;
-  return ' '.repeat(left) + text + ' '.repeat(right);
-}
-
-function box(lines, colorName = 'brightMagenta', opts = {}) {
-  const { title = null, titleColor = 'brightMagenta' } = opts;
-  const contentWidth = Math.max(
-    ...lines.map((l) => stripAnsi(l).length),
-    title ? stripAnsi(title).length + 4 : 0,
-    MIN_WIDTH - 4
-  );
-  const innerWidth = contentWidth + 2;
-
-  let top;
-  if (title) {
-    const titleLen = stripAnsi(title).length;
-    const leftDashes = 2;
-    const rightDashes = innerWidth - leftDashes - titleLen - 2;
-    top =
-      color(colorName, '╭' + '─'.repeat(leftDashes)) +
-      ' ' +
-      color(titleColor, title) +
-      ' ' +
-      color(colorName, '─'.repeat(Math.max(0, rightDashes)) + '╮');
-  } else {
-    top = color(colorName, '╭' + '─'.repeat(innerWidth) + '╮');
-  }
-
-  const bottom = color(colorName, '╰' + '─'.repeat(innerWidth) + '╯');
-
-  console.log(top);
-  for (const line of lines) {
-    const pad = ' '.repeat(contentWidth - stripAnsi(line).length + 1);
-    console.log(color(colorName, '│') + ' ' + line + pad + color(colorName, '│'));
-  }
-  console.log(bottom);
-}
-
-function divider(char = '─', colorName = 'gray', width = 44) {
-  return color(colorName, char.repeat(width));
 }
 
 function prompt(question) {
@@ -168,11 +91,10 @@ function formatPairingCode(code) {
   return code?.match(/.{1,4}/g)?.join(' ') || code;
 }
 
-function counterBar(used, max) {
-  const width = 18;
+function counterBar(used, max, width = 20) {
   const filled = Math.min(width, Math.round((used / max) * width));
   const empty = width - filled;
-  const barColor = used >= max ? 'brightRed' : 'brightMagenta';
+  const barColor = used >= max ? 'brightGreen' : 'brightMagenta';
   return (
     color(barColor, '▰'.repeat(filled)) +
     color('gray', '▱'.repeat(empty)) +
@@ -185,128 +107,153 @@ function sleep(ms) {
   return new Promise((r) => setTimeout(r, ms));
 }
 
-async function countdown(seconds, label) {
-  for (let i = seconds; i > 0; i--) {
-    process.stdout.write(`\r  ${color('brightYellow', '◷')} ${color('gray', label)} ${color('brightCyan', String(i) + 's')}   `);
-    await sleep(1000);
-  }
-  process.stdout.write('\r\x1b[K');
-}
-
 const logger = P({ level: 'silent' });
 
-function renderHeader() {
-  const lines = [
-    color('brightMagenta', '  ██╗  ██╗██╗   ██╗██╗   ██╗██╗   ██╗'),
-    color('brightMagenta', '  ██║ ██╔╝╚██╗ ██╔╝██║   ██║██║   ██║'),
-    color('brightMagenta', '  █████╔╝  ╚████╔╝ ██║   ██║██║   ██║'),
-    color('brightMagenta', '  ██╔═██╗   ╚██╔╝  ██║   ██║██║   ██║'),
-    color('brightMagenta', '  ██║  ██╗   ██║   ╚██████╔╝╚██████╔╝'),
-    color('brightMagenta', '  ╚═╝  ╚═╝   ╚═╝    ╚═════╝  ╚═════╝ '),
-    '',
-    '  ' + color('brightCyan', '╭─────────────────────────────────────╮'),
-    '  ' + color('brightCyan', '│') + '  ' + color('brightWhite', 'W H A T S A P P   P A I R I N G') + '      ' + color('brightCyan', '│'),
-    '  ' + color('brightCyan', '│') + '  ' + color('gray', `by ${AUTHOR}`.padEnd(35)) + color('brightCyan', '│'),
-    '  ' + color('brightCyan', '╰─────────────────────────────────────╯'),
-  ];
-  for (const l of lines) console.log(l);
-}
-
-async function printBanner(cfg, usedCount) {
+function renderHeader(cfg) {
   console.clear();
-  renderHeader();
+  const W = 50;
+  const line = (l, r) => color('brightCyan', '║') + ' ' + l + ' '.repeat(Math.max(0, W - 2 - stripAnsi(l).length - stripAnsi(r).length)) + r + ' ' + color('brightCyan', '║');
+  const empty = color('brightCyan', '║') + ' '.repeat(W) + color('brightCyan', '║');
+
+  const top    = color('brightCyan', '╔' + '═'.repeat(W) + '╗');
+  const mid    = color('brightCyan', '╠' + '═'.repeat(W) + '╣');
+  const bottom = color('brightCyan', '╚' + '═'.repeat(W) + '╝');
+
+  const title1 = color('bold', color('brightMagenta', 'K Y U U   S P A M'));
+  const title2 = color('gray', `WhatsApp Pairing • by ${AUTHOR}`);
+
   console.log();
-  const rows = [
-    `${color('gray', 'Nomor  ')} ${color('brightWhite', cfg.phone || color('gray', 'belum diatur'))}`,
-    `${color('gray', 'Target ')} ${color('brightYellow', cfg.maxPairing + 'x')}   ${color('gray', 'Delay')} ${color('brightYellow', cfg.delayBetween / 1000 + 's')}`,
-    `${color('gray', 'Mode   ')} ${color('brightGreen', '⚡ SPAM MODE')} ${color('gray', '(tanpa nunggu kode)')}`,
-    `${color('gray', 'Progress')} ${counterBar(usedCount, cfg.maxPairing)}`,
-  ];
-  box(rows, 'brightCyan');
+  console.log(top);
+  console.log(empty);
+  console.log(line('', title1));
+  console.log(line('', title2));
+  console.log(empty);
+  console.log(mid);
+  console.log(
+    color('brightCyan', '║') +
+      ' ' +
+      color('gray', 'Nomor ') +
+      color('brightWhite', (cfg.phone || '-').padEnd(W - 10)) +
+      ' ' +
+      color('brightCyan', '║')
+  );
+  console.log(
+    color('brightCyan', '║') +
+      ' ' +
+      color('gray', 'Target ') +
+      color('brightYellow', `${cfg.maxPairing}x`.padEnd(6)) +
+      color('gray', ' Delay ') +
+      color('brightYellow', `${cfg.delayBetween / 1000}s`.padEnd(6)) +
+      color('gray', ' Mode ') +
+      color('brightGreen', 'SPAM'.padEnd(Math.max(0, W - 36))) +
+      ' ' +
+      color('brightCyan', '║')
+  );
+  console.log(bottom);
   console.log();
 }
 
-function renderPairingCode(formatted, index, total, phone) {
-  const lines = [
-    '',
-    color('brightGreen', '   ┌───────────────────────────────┐'),
-    color('brightGreen', '   │') + color('dim', color('gray', '      PAIRING CODE             ')) + color('brightGreen', '│'),
-    color('brightGreen', '   ├───────────────────────────────┤'),
-    color('brightGreen', '   │') + '  ' + color('bold', color('brightYellow', formatted.padStart(14).padEnd(29))) + color('brightGreen', '│'),
-    color('brightGreen', '   └───────────────────────────────┘'),
-    '',
-    color('gray', `   ${'─'.repeat(43)}`),
-    '',
-    color('brightCyan', '   Cara pakai:'),
-    color('gray', '   1. Buka WhatsApp di HP'),
-    color('gray', '   2. Menu → Perangkat Tertaut → Tautkan Perangkat'),
-    color('gray', '   3. Pilih "Tautkan dengan nomor telepon"'),
-    color('gray', `   4. Masukkan kode: ${color('brightYellow', formatted)}`),
-    '',
-  ];
-  for (const l of lines) console.log(l);
+function renderCodeLine(code, index, total) {
+  const left = color('gray', `  [${String(index).padStart(2, '0')}/${total}]`);
+  const codeBox =
+    color('brightGreen', '┌──────────────────┐') +
+    '  ' +
+    color('dim', color('gray', 'pairing code'));
+  const codeLine =
+    color('brightGreen', '│') +
+    '  ' +
+    color('bold', color('brightYellow', code.padEnd(16))) +
+    color('brightGreen', '│');
+  const codeBottom = color('brightGreen', '└──────────────────┘');
+  console.log(left + ' ' + codeBox);
+  console.log('       ' + codeLine);
+  console.log('       ' + codeBottom);
 }
 
 async function singlePairing(cfg, phoneNumber, index, total) {
   clearSession();
 
-  const spinner = createSpinner('Memuat session auth...');
+  const spinner = createInlineSpinner(() => `[${index}/${total}] Menyiapkan session...`);
   spinner.start();
-  const { state, saveCreds } = await useMultiFileAuthState(SESSION_DIR);
-  const { version } = await fetchLatestBaileysVersion();
-  spinner.stop(`  ${color('brightGreen', '✔')} ${color('gray', 'Session auth dimuat')}`);
 
-  const sock = makeWASocket({
-    version, logger, printQRInTerminal: false,
-    auth: { creds: state.creds, keys: makeCacheableSignalKeyStore(state.keys, logger) },
-    browser: ['Ubuntu', 'Chrome', '22.04.4'],
-    generateHighQualityLinkPreview: true,
-  });
-  sock.ev.on('creds.update', saveCreds);
+  let sock;
+  try {
+    const { state, saveCreds } = await useMultiFileAuthState(SESSION_DIR);
+    const { version } = await fetchLatestBaileysVersion();
 
-  return new Promise((resolve) => {
-    let settled = false;
-    const finish = (result) => {
-      if (settled) return;
-      settled = true;
-      try { sock.end(undefined); } catch (_) {}
-      resolve(result);
-    };
+    sock = makeWASocket({
+      version, logger, printQRInTerminal: false,
+      auth: { creds: state.creds, keys: makeCacheableSignalKeyStore(state.keys, logger) },
+      browser: ['Ubuntu', 'Chrome', '22.04.4'],
+      generateHighQualityLinkPreview: true,
+    });
+    sock.ev.on('creds.update', saveCreds);
 
-    const codeSpinner = createSpinner('Meminta pairing code...', 'brightYellow');
+    spinner.stop();
+
+    const codeSpinner = createInlineSpinner(() => `[${index}/${total}] Meminta kode...`);
     codeSpinner.start();
 
-    setTimeout(async () => {
-      try {
-        const code = await sock.requestPairingCode(phoneNumber);
-        const formatted = formatPairingCode(code);
-        codeSpinner.stop(`  ${color('brightGreen', '✔')} ${color('gray', 'Pairing code terkirim')}`);
-        console.log();
+    await new Promise((r) => setTimeout(r, 2200));
 
-        renderPairingCode(formatted, index, total, phoneNumber);
+    const code = await sock.requestPairingCode(phoneNumber);
+    const formatted = formatPairingCode(code);
 
-        finish('sent');
-      } catch (err) {
-        codeSpinner.stop(`  ${color('brightRed', '✖')} ${color('gray', 'Gagal request pairing code')}`);
-        console.log(color('brightRed', `  ${err.message}`));
-        finish('error');
-      }
-    }, 2500);
-  });
+    codeSpinner.stop();
+
+    renderCodeLine(formatted, index, total);
+
+    try { sock.end(undefined); } catch (_) {}
+
+    console.log(
+      '  ' +
+        color('brightGreen', '✔') +
+        ' ' +
+        color('gray', 'Kode terkirim ke ') +
+        color('brightWhite', phoneNumber)
+    );
+    console.log();
+
+    return { result: 'sent', code: formatted };
+  } catch (err) {
+    spinner.stop();
+    try { sock?.end(undefined); } catch (_) {}
+
+    console.log(
+      '  ' +
+        color('brightRed', '✖') +
+        ' ' +
+        color('gray', `[${index}/${total}] Gagal: `) +
+        color('brightRed', err.message)
+    );
+    console.log();
+
+    return { result: 'error', error: err.message };
+  }
+}
+
+async function countdownInline(seconds, label) {
+  for (let i = seconds; i > 0; i--) {
+    process.stdout.write(
+      `\r\x1b[K  ${color('brightYellow', '◷')} ${color('gray', label)} ${color('brightCyan', String(i) + 's')}  `
+    );
+    await sleep(1000);
+  }
+  process.stdout.write('\r\x1b[K');
 }
 
 async function runContinuousPairing(state) {
   const cfg = state.cfg;
-  await printBanner(cfg, state.used);
 
   if (!cfg.phone) {
+    console.log();
     let cleanNumber = null;
     while (!cleanNumber) {
-      console.log(color('brightCyan', '  ╭─ Input Nomor ──────────────────────╮'));
-      const input = await prompt(color('brightCyan', '  │ ') + color('gray', 'Nomor target: '));
-      console.log(color('brightCyan', '  ╰────────────────────────────────────╯'));
+      const input = await prompt(
+        '  ' + color('brightYellow', '❯') + color('gray', ' Nomor target: ')
+      );
       cleanNumber = validateNumber(input);
-      if (!cleanNumber) console.log(color('brightRed', '  ⚠ Nomor tidak valid, coba lagi\n'));
+      if (!cleanNumber) console.log('  ' + color('brightRed', '✖ Nomor tidak valid'));
     }
     cfg.phone = cleanNumber;
     saveConfig(cfg);
@@ -315,94 +262,59 @@ async function runContinuousPairing(state) {
 
   const totalToRun = cfg.maxPairing - state.used;
   if (totalToRun <= 0) {
-    box(
-      [
-        color('brightRed', 'BATAS PAIRING TERCAPAI'),
-        '',
-        color('gray', 'Nomor  : ') + color('brightWhite', cfg.phone),
-        color('gray', 'Sudah  : ') + color('brightYellow', cfg.maxPairing + 'x'),
-        '',
-        color('dim', 'Ubah target lewat menu [3] atau reset lewat [6]'),
-      ],
-      'brightRed',
-      { title: 'LIMIT', titleColor: 'brightRed' }
-    );
+    console.log('  ' + color('brightRed', '✖ Batas pairing tercapai'));
     console.log();
     return;
   }
 
-  console.log();
-  box(
-    [
-      color('gray', 'Nomor     ') + color('brightWhite', cfg.phone),
-      color('gray', 'Pairing   ') + color('brightYellow', `${totalToRun}x lagi`) + color('gray', ` (total ${cfg.maxPairing}x)`),
-      color('gray', 'Delay     ') + color('brightYellow', `${cfg.delayBetween / 1000}s antar pairing`),
-      color('gray', 'Mode      ') + color('brightGreen', '⚡ SPAM (langsung lanjut)'),
-    ],
-    'brightCyan',
-    { title: 'KONFIRMASI', titleColor: 'brightCyan' }
+  console.log(
+    '  ' +
+      color('brightYellow', '⚡') +
+      ' ' +
+      color('brightWhite', `Mulai pairing beruntun `) +
+      color('brightCyan', `${totalToRun}x`) +
+      color('gray', ` ke ${cfg.phone}`)
   );
-  console.log();
-
-  const confirm = await prompt('  ' + color('brightYellow', '❯') + color('gray', ' Lanjutkan? (y/n): '));
-  if (confirm.toLowerCase() !== 'y') {
-    console.log('\n  ' + color('gray', 'Dibatalkan'));
-    console.log();
-    return;
-  }
+  console.log('  ' + color('gray', '─'.repeat(50)));
   console.log();
 
   const results = [];
+  const startTime = Date.now();
 
   for (let i = state.used + 1; i <= cfg.maxPairing; i++) {
-    await printBanner(cfg, state.used);
-
-    const headerLeft = color('brightMagenta', `◆ PAIRING ${i}/${cfg.maxPairing}`);
-    const headerRight = color('gray', new Date().toLocaleTimeString('id-ID'));
-    const gap = Math.max(1, 42 - stripAnsi(headerLeft).length - stripAnsi(headerRight).length);
-    console.log(`  ${headerLeft}${' '.repeat(gap)}${headerRight}`);
-    console.log('  ' + divider('─', 'gray', 44));
-    console.log();
-
-    const result = await singlePairing(cfg, cfg.phone, i, cfg.maxPairing);
-    results.push({ index: i, result });
+    const res = await singlePairing(cfg, cfg.phone, i, cfg.maxPairing);
+    results.push({ index: i, ...res });
     state.used++;
 
-    if (result === 'sent') {
-      console.log(`  ${color('brightGreen', '✔')} ${color('gray', 'Kode terkirim ke')} ${color('brightWhite', cfg.phone)}`);
-    } else {
-      console.log(`  ${color('brightRed', '✖')} ${color('gray', 'Gagal:')} ${color('brightRed', result)}`);
-    }
-    console.log();
-
     if (i < cfg.maxPairing && cfg.delayBetween > 0) {
-      await countdown(Math.round(cfg.delayBetween / 1000), 'Pairing berikutnya dalam');
-      console.log();
+      await countdownInline(Math.round(cfg.delayBetween / 1000), 'Pairing berikutnya dalam');
     }
   }
 
-  await printBanner(cfg, state.used);
+  const elapsed = Math.round((Date.now() - startTime) / 1000);
   const successCount = results.filter((r) => r.result === 'sent').length;
   const failedCount = results.length - successCount;
 
-  const summaryLines = [
-    '',
-    color('gray', 'Nomor     ') + color('brightWhite', cfg.phone),
-    color('gray', 'Total     ') + color('brightYellow', `${results.length}x`),
-    color('gray', 'Terkirim  ') + color('brightGreen', `${successCount}x`) + color('gray', '  Gagal  ') + color('brightRed', `${failedCount}x`),
-    '',
-    color('gray', divider('─', 'gray', 44)),
-    '',
-    ...results.map(
-      (r) =>
-        color('gray', `[${String(r.index).padStart(2, '0')}] `) +
-        (r.result === 'sent'
-          ? color('brightGreen', '✔ SENT')
-          : color('brightRed', '✖ ' + r.result.toUpperCase()))
-    ),
-  ];
-
-  box(summaryLines, 'brightGreen', { title: 'SESI SELESAI', titleColor: 'brightGreen' });
+  console.log();
+  console.log('  ' + color('brightMagenta', '═'.repeat(50)));
+  console.log(
+    '  ' +
+      color('bold', color('brightMagenta', '  S E L E S A I  ')) +
+      color('gray', ` (${elapsed}s)`)
+  );
+  console.log('  ' + color('brightMagenta', '═'.repeat(50)));
+  console.log();
+  console.log('  ' + color('gray', 'Nomor      : ') + color('brightWhite', cfg.phone));
+  console.log('  ' + color('gray', 'Total      : ') + color('brightYellow', `${results.length}x`));
+  console.log(
+    '  ' +
+      color('gray', 'Berhasil   : ') +
+      color('brightGreen', `${successCount}x`) +
+      color('gray', '   Gagal : ') +
+      color('brightRed', `${failedCount}x`)
+  );
+  console.log();
+  console.log('  ' + color('gray', 'Progress   : ') + counterBar(state.used, cfg.maxPairing));
   console.log();
 }
 
@@ -410,10 +322,10 @@ async function settingsMenu(state) {
   const cfg = state.cfg;
 
   while (true) {
-    await printBanner(cfg, state.used);
+    renderHeader(cfg);
 
     console.log('  ' + color('bold', color('brightCyan', 'PENGATURAN')));
-    console.log('  ' + divider('─', 'gray', 44));
+    console.log('  ' + color('gray', '─'.repeat(50)));
     console.log();
     console.log(`  ${color('brightMagenta', '1')}  Target pairing   ${color('brightWhite', cfg.maxPairing + 'x')}`);
     console.log(`  ${color('brightMagenta', '2')}  Delay antar      ${color('brightWhite', cfg.delayBetween / 1000 + 's')}`);
@@ -436,7 +348,7 @@ async function settingsMenu(state) {
         console.log('  ' + color('brightGreen', `✔ Target diubah jadi ${val}x`));
       }
     } else if (choice === '2') {
-      const input = await prompt(`\n  ${color('gray', `Delay baru dalam detik (5-600, sekarang ${cfg.delayBetween / 1000}):`)} `);
+      const input = await prompt(`\n  ${color('gray', `Delay baru (5-600 detik, sekarang ${cfg.delayBetween / 1000}):`)} `);
       const val = parseInt(input, 10);
       if (isNaN(val) || val < 5 || val > 600) {
         console.log('  ' + color('brightRed', '✖ Angka tidak valid (5-600)'));
@@ -462,11 +374,11 @@ async function settingsMenu(state) {
         }
       }
     } else if (choice === '4') {
-      const confirm = await prompt(`\n  ${color('brightYellow', '⚠')} ${color('gray', 'Reset semua ke default? (y/n):')} `);
+      const confirm = await prompt(`\n  ${color('brightYellow', '⚠')} ${color('gray', 'Reset ke default? (y/n):')} `);
       if (confirm.toLowerCase() === 'y') {
         state.cfg = { ...DEFAULT_CONFIG, phone: cfg.phone };
         saveConfig(state.cfg);
-        console.log('  ' + color('brightGreen', '✔ Setting direset (nomor tetap)'));
+        console.log('  ' + color('brightGreen', '✔ Direset (nomor tetap)'));
       } else {
         console.log('  ' + color('gray', 'Dibatalkan'));
       }
@@ -477,7 +389,6 @@ async function settingsMenu(state) {
     }
 
     await prompt('\n  ' + color('gray', 'Tekan Enter...'));
-    console.log();
   }
 }
 
@@ -486,12 +397,12 @@ async function mainMenu() {
 
   while (true) {
     const cfg = state.cfg;
-    await printBanner(cfg, state.used);
+    renderHeader(cfg);
 
     const limitReached = state.used >= cfg.maxPairing;
 
     console.log('  ' + color('bold', color('brightCyan', 'MENU')));
-    console.log('  ' + divider('─', 'gray', 44));
+    console.log('  ' + color('gray', '─'.repeat(50)));
     console.log();
     if (limitReached) {
       console.log(`  ${color('gray', '1')}  ${color('gray', 'Pairing beruntun (LIMIT)')}`);
@@ -530,13 +441,13 @@ async function mainMenu() {
           saveConfig(cfg);
         }
         state.used++;
-        const result = await singlePairing(cfg, cfg.phone, state.used, cfg.maxPairing);
+        const res = await singlePairing(cfg, cfg.phone, state.used, cfg.maxPairing);
         console.log();
         console.log(
           '  ' +
-            (result === 'sent'
+            (res.result === 'sent'
               ? color('brightGreen', '✔ Kode terkirim')
-              : color('brightRed', `✖ Gagal: ${result}`))
+              : color('brightRed', `✖ Gagal: ${res.error || 'unknown'}`))
         );
         console.log();
       }
@@ -555,7 +466,7 @@ async function mainMenu() {
       await prompt('  ' + color('gray', 'Tekan Enter untuk kembali...'));
     } else if (choice === '5') {
       console.log('  ' + color('bold', color('brightCyan', 'STATUS SESSION')));
-      console.log('  ' + divider('─', 'gray', 44));
+      console.log('  ' + color('gray', '─'.repeat(50)));
       console.log();
       const exists = fs.existsSync(`${SESSION_DIR}/creds.json`);
       if (exists) {

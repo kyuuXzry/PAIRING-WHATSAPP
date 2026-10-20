@@ -1,0 +1,6 @@
+{
+  "maxPairing": 20,
+  "delayBetween": 5000,
+  "timeoutPerCode": 5000,
+  "phone": null
+}
